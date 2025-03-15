@@ -14,21 +14,24 @@ class RestSandbox(cmd.Cmd):
         self.session = requests.Session()
         self.con = rich.console.Console()
 
-    def do_get(self, args):
-        url = self.pwd + args
+    def do_get(self, args: str):
+        args = args.strip().removeprefix("/")
+        if self.pwd:
+            url = f"{self.pwd}/{args}"
+        else:
+            url = args
+        url = url.removeprefix("/").removesuffix("/")
+
         self.con.print(f"GET {url}")
         resp = self.session.get(url)
         self.con.print(f"{resp.status_code} {resp.reason}")
-        if not resp.ok:
-            pass  # TODO: handle it
-
         self.con.print_json(data=resp.json())
 
-    def do_cd(self, name):
+    def do_cd(self, name: str):
         """
         Go to a resource. For example: cd https://httpbin.org
         """
-        self.pwd = name
+        self.pwd = name.removesuffix("/")
 
     def do_quit(self, _):
         return True
@@ -37,10 +40,10 @@ class RestSandbox(cmd.Cmd):
         pass
 
     def postcmd(self, stop, line):
-        print(f"\n{self.pwd}")
-
         if stop:
             self.session.close()
+        else:
+            print(f"\n{self.pwd}")
 
         return stop
 
