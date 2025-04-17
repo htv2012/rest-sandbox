@@ -5,11 +5,7 @@ import urllib.parse
 import requests
 import rich.console
 
-
-def url_join(root: str, path: pathlib.Path) -> str:
-    path = path.resolve()
-    parts = urllib.parse.urlsplit(root)
-    return urllib.parse.urlunsplit(parts._replace(path=str(path)))
+from .tools import url_join
 
 
 class RestSandbox(cmd.Cmd):
@@ -34,14 +30,7 @@ class RestSandbox(cmd.Cmd):
         self.pwd = (self.pwd / name).resolve()
 
     def do_get(self, args: str):
-        #        args = args.strip().removeprefix("/")
-        #        if self.pwd:
-        #            url = f"{self.pwd}/{args}"
-        #        else:
-        #            url = args
-        # url = url.removeprefix("/").removesuffix("/")
         url = url_join(self.home, self.pwd / args)
-
         self.con.print(f"GET {url}")
         resp = self.session.get(url)
         self.con.print(f"{resp.status_code} {resp.reason}")
