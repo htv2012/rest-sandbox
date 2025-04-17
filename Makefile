@@ -11,7 +11,7 @@ lint:
 
 ### Run the project
 run: lint
-	uv run rbox
+	uv run rest-box
 
 ### Run unit tests
 test: lint
