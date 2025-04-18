@@ -10,7 +10,7 @@ lint:
 	uv run ruff check . --fix
 
 ### Run the project
-run: lint
+run: lint test
 	uv run rest-box
 
 ### Run unit tests

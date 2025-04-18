@@ -41,11 +41,15 @@ class RestSandbox(cmd.Cmd):
         else:
             url = url_join(self.home, self.pwd / args)
 
-        self.con.print(f"GET {url}")
         try:
             resp = self.session.get(url)
-            self.con.print(f"{resp.status_code} {resp.reason}")
-            self.con.print_json(data=resp.json())
+            with self.con.pager(styles=True):
+                self.con.print(f"GET {url}")
+                self.con.print(f"{resp.status_code} {resp.reason}")
+                for key, value in resp.headers.items():
+                    self.con.print(f"{key}: {value}")
+                self.con.print()
+                self.con.print_json(data=resp.json())
         except (ConnectionError, MissingSchema) as error:
             self.con.print(error)
 
