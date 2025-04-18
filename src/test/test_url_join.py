@@ -12,6 +12,7 @@ ROOT_SLASH = f"{ROOT}/"
         pytest.param([], ROOT, id="no_path"),
         pytest.param(["/"], ROOT, id="root_path"),
         pytest.param(["foo", "bar"], f"{ROOT}/foo/bar", id="multiple_paths"),
+        pytest.param(["", "foo"], f"{ROOT}/foo", id="empty_mid_component"),
         pytest.param(["foo", ""], f"{ROOT}/foo", id="empty_last_component"),
     ],
 )
