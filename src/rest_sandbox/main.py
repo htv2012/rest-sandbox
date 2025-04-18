@@ -30,7 +30,7 @@ class RestSandbox(cmd.Cmd):
         self.pwd = (self.pwd / name).resolve()
 
     def do_get(self, args: str):
-        url = url_join(self.home, self.pwd / args)
+        url = url_join(self.home, self.pwd, args)
         self.con.print(f"GET {url}")
         resp = self.session.get(url)
         self.con.print(f"{resp.status_code} {resp.reason}")

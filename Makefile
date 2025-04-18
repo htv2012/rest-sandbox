@@ -1,13 +1,13 @@
 .PHONY: all test run lint clean
 
 ### Default target(s)
-all: run
+all: test
 
 ### Perform static analysis
 lint:
-	uv tool run ruff check --select I --fix .
-	uv tool run ruff format .
-	uv tool run ruff check . --fix
+	uv run ruff check --select I --fix .
+	uv run ruff format .
+	uv run ruff check . --fix
 
 ### Run the project
 run: lint
@@ -15,7 +15,7 @@ run: lint
 
 ### Run unit tests
 test: lint
-	uv run pytest -s -v
+	uv run pytest -s -vv
 
 ### Clean up generated files
 clean:
