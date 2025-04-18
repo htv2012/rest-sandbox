@@ -4,13 +4,13 @@ import urllib.parse
 
 import requests
 import rich.console
+from requests.exceptions import ConnectionError, MissingSchema
 
 from .tools import url_join
 
 
 class RestSandbox(cmd.Cmd):
-    prompt = "& "
-    intro = "Rest Sandbox\n"
+    intro = "Welcome to rest-box"
 
     def __init__(self, completekey="tab", stdin=None, stdout=None):
         super().__init__(completekey, stdin, stdout)
@@ -40,10 +40,14 @@ class RestSandbox(cmd.Cmd):
             url = args
         else:
             url = url_join(self.home, self.pwd / args)
+
         self.con.print(f"GET {url}")
-        resp = self.session.get(url)
-        self.con.print(f"{resp.status_code} {resp.reason}")
-        self.con.print_json(data=resp.json())
+        try:
+            resp = self.session.get(url)
+            self.con.print(f"{resp.status_code} {resp.reason}")
+            self.con.print_json(data=resp.json())
+        except (ConnectionError, MissingSchema) as error:
+            self.con.print(error)
 
     def do_quit(self, _):
         return True
@@ -51,14 +55,11 @@ class RestSandbox(cmd.Cmd):
     def emptyline(self):
         pass
 
-    def postcmd(self, stop, line):
-        if stop:
-            self.session.close()
-        else:
-            print()
-            print(url_join(self.home, self.pwd))
-
-        return stop
+    @property
+    def prompt(self):
+        url = url_join(self.home, self.pwd)
+        print(f"\n{url}")
+        return "rest-box> "
 
     do_EOF = do_quit
     do_q = do_quit
