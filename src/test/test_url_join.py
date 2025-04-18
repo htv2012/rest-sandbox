@@ -3,18 +3,15 @@ import pytest
 from rest_sandbox.tools import url_join
 
 ROOT = "http://example.com"
-ROOT_SLASH = f"{ROOT}/"
 
 
 @pytest.mark.parametrize(
-    ["paths", "expected"],
+    ["root", "path", "expected"],
     [
-        pytest.param([], ROOT, id="no_path"),
-        pytest.param(["/"], ROOT, id="root_path"),
-        pytest.param(["foo", "bar"], f"{ROOT}/foo/bar", id="multiple_paths"),
-        pytest.param(["", "foo"], f"{ROOT}/foo", id="empty_mid_component"),
-        pytest.param(["foo", ""], f"{ROOT}/foo", id="empty_last_component"),
+        pytest.param(ROOT, "", ROOT, id="without_end_slash"),
+        pytest.param(ROOT, "/", ROOT, id="with_end_slash"),
+        pytest.param(ROOT, "foo/bar", f"{ROOT}/foo/bar", id="multiple_paths"),
     ],
 )
-def test_url_join(paths, expected):
-    assert url_join(ROOT, *paths) == expected
+def test_url_join(root, path, expected):
+    assert url_join(root, path) == expected

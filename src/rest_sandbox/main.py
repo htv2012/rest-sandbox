@@ -27,10 +27,19 @@ class RestSandbox(cmd.Cmd):
         """
         Go to a resource. For example: cd /get
         """
-        self.pwd = (self.pwd / name).resolve()
+        parts = urllib.parse.urlsplit(name)
+        self.pwd /= parts.path
+        self.pwd.resolve()
+
+        home = urllib.parse.urlunsplit(parts._replace(path="", query="", fragment=""))
+        if home != "":
+            self.do_home(home)
 
     def do_get(self, args: str):
-        url = url_join(self.home, self.pwd, args)
+        if args.startswith(("http://", "https://")):
+            url = args
+        else:
+            url = url_join(self.home, self.pwd / args)
         self.con.print(f"GET {url}")
         resp = self.session.get(url)
         self.con.print(f"{resp.status_code} {resp.reason}")
@@ -46,6 +55,7 @@ class RestSandbox(cmd.Cmd):
         if stop:
             self.session.close()
         else:
+            print()
             print(url_join(self.home, self.pwd))
 
         return stop
